@@ -1,0 +1,61 @@
+import pandas as pd
+
+ 
+
+def find_outlier_bounds(sales, *cols):
+
+    """
+
+    Takes a pandas DataFrame and one or more column names as arguments,
+
+    and returns a dictionary containing the highest and lowest outlier values
+
+    for each column.
+
+    """
+
+    bounds_dict = {}
+
+
+    for col in cols:
+
+        # calculate the IQR of the column
+
+        q1 = sales[col].quantile(0.25)
+
+        q3 = sales[col].quantile(0.75)
+
+        iqr = q3 - q1
+
+ 
+
+        # calculate the upper and lower bounds for outliers
+
+        upper_bound = q3 + 1.5*iqr
+
+        lower_bound = q1 - 1.5*iqr
+
+ 
+
+        # identify any values in the column that are above or below the bounds
+
+        outliers = sales[(sales[col] > upper_bound) | (sales[col] < lower_bound)][col]
+
+ 
+
+        # add the highest and lowest outlier values to the dictionary
+
+        bounds_dict[col] = {'upper': outliers.max(), 'lower': outliers.min()}
+
+
+    return bounds_dict
+
+
+
+
+
+bounds_dict = find_outlier_bounds(sales,'Recency','MntMeat&Fish','MntEntries','MntVegan&Vegetarian','MntDesserts','MntDrinks', 'MntAdditionalRequests','NumOfferPurchases','NumAppPurchases','NumTakeAwayPurchases','NumStorePurchases','NumAppVisitsMonth')
+
+print(bounds_dict)
+
+
